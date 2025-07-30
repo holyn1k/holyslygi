@@ -4,7 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Мемуслуги</title>
-  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #222;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #444;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    nav button:hover {
+      background: #666;
+    }
+
+    #content {
+      padding: 2rem;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -19,7 +50,85 @@
 
   <main id="content"></main>
 
-  <script src="account.js"></script>
-  <script src="script.js"></script>
+  <script>
+    function getCookie(name) {
+      const matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([$?*|{}\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+      ));
+      return matches ? decodeURIComponent(matches[1]) : null;
+    }
+
+    function setCookie(name, value, days = 365) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      document.cookie = `${name}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
+    }
+
+    function getUserData() {
+      return {
+        username: getCookie('username') || 'Anon',
+        balance: parseFloat(getCookie('balance')) || 1.00,
+      };
+    }
+
+    function setUserData(data) {
+      setCookie('username', data.username);
+      setCookie('balance', data.balance);
+    }
+
+    function navigate(page) {
+      const content = document.getElementById('content');
+      const user = getUserData();
+
+      switch (page) {
+        case 'home':
+          content.innerHTML = `<h2>Добро пожаловать!</h2><p>Ты в мемном портале.</p>`;
+          break;
+
+        case 'profile':
+          content.innerHTML = `
+            <h2>Твой мемпаспорт</h2>
+            <p>Имя: ${user.username}</p>
+            <p>Баланс: ${user.balance.toFixed(2)} ₽</p>
+            <input id="newname" placeholder="Новое имя" />
+            <button onclick="updateName()">Сохранить</button>
+          `;
+          break;
+
+        case 'search':
+          content.innerHTML = `
+            <h2>Поиск пользователей</h2>
+            <input placeholder="Введите имя" />
+            <p>Фича в разработке.</p>
+          `;
+          break;
+
+        case 'balance':
+          content.innerHTML = `
+            <h2>Твой баланс</h2>
+            <p>${user.balance.toFixed(2)} ₽</p>
+            <button onclick="addBalance()">Пополнить</button>
+          `;
+          break;
+      }
+    }
+
+    function updateName() {
+      const input = document.getElementById('newname');
+      const user = getUserData();
+      user.username = input.value || user.username;
+      setUserData(user);
+      navigate('profile');
+    }
+
+    function addBalance() {
+      const user = getUserData();
+      user.balance += 5.00;
+      setUserData(user);
+      navigate('balance');
+    }
+
+    navigate('home');
+  </script>
 </body>
-                                                     </html>
+  </html>
