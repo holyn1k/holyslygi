@@ -1,0 +1,241 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html><html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>holyslygi — Святые услуги</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background: #f2f2f2;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(to right, #d52b1e, #005bac);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    nav a {
+      padding: 1rem;
+      text-decoration: none;
+      color: #005bac;
+      font-weight: bold;
+    }
+    nav a:hover {
+      background: #f0f0f0;
+    }
+    .container {
+      padding: 2rem;
+    }
+    .service, .profile, .login, .search {
+      background: white;
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      border-left: 5px solid #005bac;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .profile-data p, .login input, .login button, .search input {
+      margin: 0.5rem 0;
+    }
+    .login input, .search input {
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .login button, .search button {
+      padding: 0.7rem;
+      background: #005bac;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .login button:hover, .search button:hover {
+      background: #004080;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.8rem;
+      padding: 2rem;
+      background: #e0e0e0;
+    }
+    .balance {
+      margin-top: 1rem;
+    }
+    .balance a {
+      display: inline-block;
+      margin-top: 0.5rem;
+      background: #d52b1e;
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    #profilePhoto {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>holyslygi</h1>
+    <p>Святые услуги для избранных граждан</p>
+  </header>
+  <nav>
+    <a href="#">Главная</a>
+    <a href="#">Услуги</a>
+    <a href="#">Профиль</a>
+    <a href="#">Поддержка</a>
+  </nav>
+  <div class="container"><div class="login">
+  <h2>Вход / Регистрация</h2>
+  <input type="text" id="phone" placeholder="Номер телефона">
+  <input type="text" id="tg" placeholder="Telegram username">
+  <button onclick="loginUser()">Войти / Зарегистрироваться</button>
+</div>
+
+<div class="profile" id="profile" style="display:none">
+  <h2>Личный кабинет</h2>
+  <img id="profilePhoto" src="" alt="Фото профиля">
+  <input type="file" accept="image/*" onchange="uploadPhoto(event)">
+  <div class="profile-data">
+    <p><strong>Имя:</strong> <span id="username">—</span></p>
+    <p><strong>Холи-ID:</strong> <span id="holiid">—</span></p>
+    <p><strong>Telegram:</strong> <span id="tguser">—</span></p>
+    <p><strong>Мем-рейтинг:</strong> 9.9 / 10</p>
+    <p><strong>Уровень кармы:</strong> 1 (Новобомж)</p>
+    <p><strong>Статус:</strong> <span id="anonStatus">Виден всем</span> <button onclick="toggleAnon()">Анонимно</button></p>
+    <div class="balance">
+      <p><strong>Баланс:</strong> <span id="balance">1</span> ₽</p>
+      <a href="http://t.me/anonaskbot?start=MegaProbiv" target="_blank">Пополнить / Перевести</a>
+    </div>
+  </div>
+</div>
+
+<div class="search">
+  <h2>Поиск граждан</h2>
+  <input type="text" id="searchQuery" placeholder="Введите Telegram или имя">
+  <button onclick="searchUser()">Найти</button>
+  <p id="searchResult">—</p>
+</div>
+
+<div class="service">
+  <h2>Заказать справку о бессмертии</h2>
+  <p>Подтвердите свою божественность. Доступно с 3 уровня прокачки кармы.</p>
+</div>
+<div class="service">
+  <h2>Смена пола в Roblox</h2>
+  <p>Услуга навсегда. Требуется одобрение Верховного Холи.</p>
+</div>
+<div class="service">
+  <h2>Подключение блат-услуг</h2>
+  <p>Подключите блат. Ускоренное обслуживание и бесплатные плюшки в Minecraft.</p>
+</div>
+<div class="service">
+  <h2>Оформить мемпаспорт</h2>
+  <p>Заменяет обычный паспорт. Признаётся всеми Discord-серверами.</p>
+</div>
+
+  </div>
+  <div class="footer">
+    <p>&copy; 2025 holyslygi — Госуслуги, но смешно. Все права защищены. (или нет)</p>
+  </div>
+  <script>
+    let isAnon = false;
+    function loginUser() {
+      const phone = document.getElementById('phone').value;
+      const tg = document.getElementById('tg').value;
+      if (!phone || !tg) return alert('Введите номер телефона и Telegram');const user = {
+    name: `Гражданин ${tg}`,
+    id: 'HLY-' + Math.floor(Math.random() * 999999),
+    tg: '@' + tg,
+    balance: 1,
+    photo: '',
+    anon: false
+  };
+  document.cookie = `hly_user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=31536000`;
+  loadProfile(user);
+}
+
+function loadProfile(user) {
+  document.querySelector('.login').style.display = 'none';
+  document.getElementById('profile').style.display = 'block';
+  document.getElementById('username').textContent = user.name;
+  document.getElementById('holiid').textContent = user.id;
+  document.getElementById('tguser').textContent = user.tg;
+  document.getElementById('balance').textContent = user.balance;
+  document.getElementById('anonStatus').textContent = user.anon ? 'Анонимный режим' : 'Виден всем';
+  if (user.photo) {
+    document.getElementById('profilePhoto').src = user.photo;
+  } else {
+    document.getElementById('profilePhoto').src = 'https://placekitten.com/100/100';
+  }
+}
+
+function uploadPhoto(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.getElementById('profilePhoto').src = reader.result;
+    const user = getUser();
+    user.photo = reader.result;
+    saveUser(user);
+  }
+  reader.readAsDataURL(file);
+}
+
+function toggleAnon() {
+  const user = getUser();
+  user.anon = !user.anon;
+  saveUser(user);
+  loadProfile(user);
+}
+
+function getUser() {
+  const cookies = document.cookie.split('; ');
+  const found = cookies.find(row => row.startsWith('hly_user='));
+  return found ? JSON.parse(decodeURIComponent(found.split('=')[1])) : null;
+}
+
+function saveUser(user) {
+  document.cookie = `hly_user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=31536000`;
+}
+
+function searchUser() {
+  const q = document.getElementById('searchQuery').value.toLowerCase();
+  const user = getUser();
+  if (!user) return;
+  if (user.anon) {
+    document.getElementById('searchResult').textContent = '🔒 Пользователь скрыт в анонимном режиме';
+    return;
+  }
+  if (user.tg.toLowerCase().includes(q) || user.name.toLowerCase().includes(q)) {
+    document.getElementById('searchResult').textContent = `Найден: ${user.name} (${user.tg})`;
+  } else {
+    document.getElementById('searchResult').textContent = 'Никого не найдено';
+  }
+}
+
+window.onload = () => {
+  const user = getUser();
+  if (user) loadProfile(user);
+}
+
+  </script>
+</body>
+</html>
