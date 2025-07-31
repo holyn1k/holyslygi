@@ -1,72 +1,201 @@
-<!DOCTYPE html><html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Мемуслуги | holyslygi</title>
+  <title>Мемуслуги</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #fafafa, #f0f0f0);
+      font-family: sans-serif;
+      background: #f4f4f4;
       margin: 0;
-      padding: 0;
-      color: #222;
-    }
-    header, footer {
-      background: #0040ff;
-      color: white;
-      padding: 10px 20px;
-      text-align: center;
+      padding: 20px;
     }
     .container {
-      padding: 20px;
-    }
-    .login, .content, .menu {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 20px;
+      max-width: 500px;
+      margin: auto;
       background: white;
-      border-radius: 10px;
+      padding: 20px;
+      border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    h1 {
+      text-align: center;
+    }
     input, button {
-      padding: 10px;
-      margin-top: 10px;
       width: 100%;
-      border-radius: 5px;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 8px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #profile, #users-section, #messages {
+      margin-top: 20px;
     }
     .hidden {
       display: none;
     }
-    .menu button {
-      width: auto;
-      margin: 5px;
+    .user {
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+    }
+    .msg {
+      padding: 5px;
+      margin: 5px 0;
+      background: #eee;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Мемуслуги - портал мемности</h1>
-  </header>  <div class="container">
-    <div class="login" id="login">
-      <h2>Вход</h2>
-      <input type="text" id="phone" placeholder="Введите номер телефона" />
-      <input type="text" id="username" placeholder="Введите имя пользователя" />
-      <button onclick="login()">Войти</button>
-    </div><div class="content hidden" id="main">
-  <h2 id="greeting"></h2>
-  <p>Ваш баланс: <span id="balance"></span> руб.</p>
-  <label><input type="checkbox" id="anonToggle" onchange="toggleAnon()" /> Анонимный режим</label>
-  <div class="menu">
-    <button onclick="openService('паспорт')">Мемпаспорт</button>
-    <button onclick="openService('деньги')">МемДеньги</button>
-    <button onclick="openService('сообщения')">МемСообщения</button>
-    <button onclick="openService('поиск')">Поиск пользователей</button>
-  </div>
-  <div id="service"></div>
-</div>
+  <div class="container">
+    <h1>Мемуслуги</h1>
 
-  </div>  <footer>
-    &copy; 2025 holyn1k мемпортал
-  </footer>  <script src="script.js"></script></body>
-</html>
+    <div id="login-section">
+      <input id="login-phone" placeholder="Номер телефона">
+      <input id="login-username" placeholder="Имя пользователя">
+      <button onclick="login()">Войти</button>
+    </div>
+
+    <div id="profile" class="hidden">
+      <p>Привет, <b id="current-name"></b> (<span id="current-user"></span>)</p>
+      <button onclick="toggleAnon()">Вкл/Выкл анонимность</button>
+      <button onclick="logout()">Выйти</button>
+    </div>
+
+    <div id="users-section" class="hidden">
+      <h3>Пользователи</h3>
+      <input id="search" placeholder="Поиск" oninput="renderUsers()">
+      <div id="users"></div>
+    </div>
+
+    <div id="messages" class="hidden">
+      <h3>Сообщения</h3>
+      <div id="msg-container"></div>
+      <input id="msg-text" placeholder="Написать сообщение...">
+      <button onclick="sendMsg()">Отправить</button>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+
+    function saveAccounts(accounts) {
+      localStorage.setItem("accounts", JSON.stringify(accounts));
+    }
+
+    function getAccounts() {
+      return JSON.parse(localStorage.getItem("accounts") || "[]");
+    }
+
+    function login() {
+      const phone = document.getElementById("login-phone").value.trim();
+      const username = document.getElementById("login-username").value.trim();
+
+      if (!phone || !username) return alert("Заполните все поля");
+
+      const accounts = getAccounts();
+      if (accounts.find(u => u.phone === phone || u.username === username)) {
+        alert("Такой номер или юзер уже используется");
+        return;
+      }
+
+      const newUser = {
+        phone,
+        username,
+        anon: false,
+        messages: []
+      };
+
+      accounts.push(newUser);
+      saveAccounts(accounts);
+      localStorage.setItem("currentUser", phone);
+      location.reload();
+    }
+
+    function loadUser() {
+      const phone = localStorage.getItem("currentUser");
+      const accounts = getAccounts();
+      const user = accounts.find(u => u.phone === phone);
+      if (!user) return;
+      currentUser = user;
+      document.getElementById("login-section").classList.add("hidden");
+      document.getElementById("profile").classList.remove("hidden");
+      document.getElementById("users-section").classList.remove("hidden");
+      document.getElementById("messages").classList.remove("hidden");
+      document.getElementById("current-name").textContent = user.username;
+      document.getElementById("current-user").textContent = user.anon ? "Анонимно" : user.phone;
+      renderUsers();
+      renderMessages();
+    }
+
+    function toggleAnon() {
+      const accounts = getAccounts();
+      const idx = accounts.findIndex(u => u.phone === currentUser.phone);
+      accounts[idx].anon = !accounts[idx].anon;
+      currentUser.anon = accounts[idx].anon;
+      saveAccounts(accounts);
+      document.getElementById("current-user").textContent = currentUser.anon ? "Анонимно" : currentUser.phone;
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      location.reload();
+    }
+
+    function renderUsers() {
+      const search = document.getElementById("search").value.toLowerCase();
+      const container = document.getElementById("users");
+      const accounts = getAccounts();
+      container.innerHTML = "";
+      accounts.forEach(u => {
+        if (u.phone === currentUser.phone) return;
+        if (u.username.toLowerCase().includes(search)) {
+          const div = document.createElement("div");
+          div.className = "user";
+          div.textContent = `${u.username} (${u.anon ? "Анонимно" : u.phone})`;
+          container.appendChild(div);
+        }
+      });
+    }
+
+    function renderMessages() {
+      const container = document.getElementById("msg-container");
+      container.innerHTML = "";
+      const accounts = getAccounts();
+      accounts.forEach(u => {
+        u.messages.forEach(msg => {
+          const div = document.createElement("div");
+          div.className = "msg";
+          div.textContent = `${msg.from}: ${msg.text}`;
+          container.appendChild(div);
+        });
+      });
+    }
+
+    function sendMsg() {
+      const text = document.getElementById("msg-text").value.trim();
+      if (!text) return;
+      const accounts = getAccounts();
+      const idx = accounts.findIndex(u => u.phone === currentUser.phone);
+      accounts[idx].messages.push({
+        from: currentUser.anon ? "Аноним" : currentUser.username,
+        text
+      });
+      saveAccounts(accounts);
+      document.getElementById("msg-text").value = "";
+      renderMessages();
+    }
+
+    loadUser();
+  </script>
+</body>
+        </html>
