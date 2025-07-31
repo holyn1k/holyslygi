@@ -2,200 +2,270 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Мемуслуги</title>
+  <title>Holyslygi — Мемуслуги</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #f4f4f4;
+      background: #f5f5f5;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
+    header, footer {
+      background: #0052cc;
+      color: white;
+      padding: 10px;
       text-align: center;
     }
-    input, button {
-      width: 100%;
-      margin: 5px 0;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
+    #login, #chat, #passport, #services {
+      max-width: 500px;
+      margin: 20px auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
     }
-    button {
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    #profile, #users-section, #messages {
-      margin-top: 20px;
-    }
-    .hidden {
+    #chat, #passport {
       display: none;
     }
-    .user {
-      border-bottom: 1px solid #ddd;
-      padding: 5px 0;
-    }
     .msg {
+      border-bottom: 1px solid #eee;
       padding: 5px;
-      margin: 5px 0;
-      background: #eee;
+      position: relative;
+    }
+    .msg small {
+      color: gray;
+    }
+    .actions {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .actions span {
+      margin-left: 8px;
+      color: #007bff;
+    }
+    #services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .service {
+      background: #e6f0ff;
+      padding: 10px;
       border-radius: 8px;
+      cursor: pointer;
+    }
+    #avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0052cc;
+      margin-bottom: 10px;
+    }
+    #passport input, #passport textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    #passport button {
+      background: #0052cc;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    nav button {
+      margin: 0 5px;
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      font-weight: 600;
+    }
+    nav button.active {
+      background: #004bb5;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Мемуслуги</h1>
+  <header>
+    <h1>holyslygi — Мемуслуги с мемами</h1>
+  </header>
 
-    <div id="login-section">
-      <input id="login-phone" placeholder="Номер телефона">
-      <input id="login-username" placeholder="Имя пользователя">
-      <button onclick="login()">Войти</button>
-    </div>
+  <nav style="text-align:center; margin: 10px;">
+    <button id="navChat" class="active" onclick="showSection('chat')">Чат</button>
+    <button id="navPassport" onclick="showSection('passport')">Мемпаспорт</button>
+  </nav>
 
-    <div id="profile" class="hidden">
-      <p>Привет, <b id="current-name"></b> (<span id="current-user"></span>)</p>
-      <button onclick="toggleAnon()">Вкл/Выкл анонимность</button>
-      <button onclick="logout()">Выйти</button>
-    </div>
-
-    <div id="users-section" class="hidden">
-      <h3>Пользователи</h3>
-      <input id="search" placeholder="Поиск" oninput="renderUsers()">
-      <div id="users"></div>
-    </div>
-
-    <div id="messages" class="hidden">
-      <h3>Сообщения</h3>
-      <div id="msg-container"></div>
-      <input id="msg-text" placeholder="Написать сообщение...">
-      <button onclick="sendMsg()">Отправить</button>
-    </div>
+  <div id="login">
+    <h3>Вход</h3>
+    <input type="text" id="username" placeholder="Ваш ник" />
+    <button onclick="login()">Войти</button>
   </div>
 
-  <script>
-    let currentUser = null;
+  <div id="chat">
+    <h3>Привет, <span id="userDisplay"></span>!</h3>
+    <div id="messages" style="max-height:300px; overflow-y:auto; border:1px solid #ccc; padding:5px;"></div>
+    <input type="text" id="msgInput" placeholder="Введите сообщение..." />
+    <button onclick="sendMessage()">Отправить</button>
+  </div>
 
-    function saveAccounts(accounts) {
-      localStorage.setItem("accounts", JSON.stringify(accounts));
+  <div id="passport">
+    <h3>Мемпаспорт</h3>
+    <img id="avatar" src="" alt="Аватар" />
+    <input type="file" id="avatarInput" accept="image/*" />
+    <input type="text" id="passportName" placeholder="Ваш ник" />
+    <textarea id="passportStatus" placeholder="Ваш мемный статус"></textarea>
+    <button onclick="savePassport()">Сохранить</button>
+  </div>
+
+  <footer>
+    &copy; holyslygi 2025
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIQjy3dFSGd9QGgV4BatCzdJTmdZ0iZi4",
+      authDomain: "mesenger-12877.firebaseapp.com",
+      projectId: "mesenger-12877",
+      storageBucket: "mesenger-12877.appspot.com",
+      messagingSenderId: "1092702050769",
+      appId: "1:1092702050769:web:43339478e22b80d5c368f0",
+      measurementId: "G-XG5906V6G2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const messagesRef = collection(db, "messages");
+
+    const username = localStorage.getItem("username");
+    if (username) {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("chat").style.display = "block";
+      document.getElementById("userDisplay").textContent = username;
+
+      // Загрузить мемпаспорт из localStorage, если есть
+      const passport = JSON.parse(localStorage.getItem("passport-" + username)) || {};
+      if(passport.name) document.getElementById("passportName").value = passport.name;
+      if(passport.status) document.getElementById("passportStatus").value = passport.status;
+      if(passport.avatarUrl) document.getElementById("avatar").src = passport.avatarUrl;
     }
 
-    function getAccounts() {
-      return JSON.parse(localStorage.getItem("accounts") || "[]");
-    }
-
-    function login() {
-      const phone = document.getElementById("login-phone").value.trim();
-      const username = document.getElementById("login-username").value.trim();
-
-      if (!phone || !username) return alert("Заполните все поля");
-
-      const accounts = getAccounts();
-      if (accounts.find(u => u.phone === phone || u.username === username)) {
-        alert("Такой номер или юзер уже используется");
-        return;
+    window.login = function() {
+      const name = document.getElementById("username").value.trim();
+      if (name) {
+        localStorage.setItem("username", name);
+        location.reload();
       }
+    };
 
-      const newUser = {
-        phone,
-        username,
-        anon: false,
-        messages: []
+    window.sendMessage = async function() {
+      const input = document.getElementById("msgInput");
+      const msg = input.value.trim();
+      if (!msg) return;
+      await addDoc(messagesRef, {
+        user: localStorage.getItem("username"),
+        text: msg,
+        time: new Date().toISOString()
+      });
+      input.value = "";
+    };
+
+    const messagesDiv = document.getElementById("messages");
+
+    onSnapshot(messagesRef, snapshot => {
+      messagesDiv.innerHTML = "";
+      snapshot.forEach(docSnap => {
+        const msg = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "msg";
+        div.innerHTML = `
+          <b>${msg.user}</b>: ${msg.text}
+          <div class="actions" data-id="${docSnap.id}">
+            ${msg.user === localStorage.getItem("username") ? `
+              <span onclick="editMessage('${docSnap.id}', '${msg.text.replace(/'/g, "\\'")}')">✏️</span>
+              <span onclick="deleteMessage('${docSnap.id}')">🗑️</span>
+            ` : ''}
+          </div>
+          <small>${new Date(msg.time).toLocaleString()}</small>
+        `;
+        messagesDiv.appendChild(div);
+      });
+    });
+
+    window.deleteMessage = async function(id) {
+      await deleteDoc(doc(db, "messages", id));
+    };
+
+    window.editMessage = function(id, oldText) {
+      const newText = prompt("Редактировать сообщение:", oldText);
+      if (newText !== null) {
+        updateDoc(doc(db, "messages", id), { text: newText });
+      }
+    };
+
+    // Навигация между чат и мемпаспортом
+    window.showSection = function(section) {
+      document.getElementById("chat").style.display = section === "chat" ? "block" : "none";
+      document.getElementById("passport").style.display = section === "passport" ? "block" : "none";
+
+      document.getElementById("navChat").classList.toggle("active", section === "chat");
+      document.getElementById("navPassport").classList.toggle("active", section === "passport");
+    };
+
+    // Загрузка и сохранение аватара в Firebase Storage
+    document.getElementById("avatarInput").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const path = `avatars/${localStorage.getItem("username")}_${Date.now()}`;
+      const avatarRef = storageRef(storage, path);
+      await uploadBytes(avatarRef, file);
+      const url = await getDownloadURL(avatarRef);
+      document.getElementById("avatar").src = url;
+
+      // Сохраняем мемпаспорт с новым URL
+      savePassportData(url);
+    });
+
+    function savePassportData(avatarUrl) {
+      const name = document.getElementById("passportName").value.trim();
+      const status = document.getElementById("passportStatus").value.trim();
+      const username = localStorage.getItem("username");
+      if (!username) return alert("Сначала войдите.");
+
+      const passport = {
+        name: name || username,
+        status,
+        avatarUrl: avatarUrl || document.getElementById("avatar").src || "",
       };
 
-      accounts.push(newUser);
-      saveAccounts(accounts);
-      localStorage.setItem("currentUser", phone);
-      location.reload();
+      localStorage.setItem("passport-" + username, JSON.stringify(passport));
+      alert("Мемпаспорт сохранён!");
     }
 
-    function loadUser() {
-      const phone = localStorage.getItem("currentUser");
-      const accounts = getAccounts();
-      const user = accounts.find(u => u.phone === phone);
-      if (!user) return;
-      currentUser = user;
-      document.getElementById("login-section").classList.add("hidden");
-      document.getElementById("profile").classList.remove("hidden");
-      document.getElementById("users-section").classList.remove("hidden");
-      document.getElementById("messages").classList.remove("hidden");
-      document.getElementById("current-name").textContent = user.username;
-      document.getElementById("current-user").textContent = user.anon ? "Анонимно" : user.phone;
-      renderUsers();
-      renderMessages();
-    }
-
-    function toggleAnon() {
-      const accounts = getAccounts();
-      const idx = accounts.findIndex(u => u.phone === currentUser.phone);
-      accounts[idx].anon = !accounts[idx].anon;
-      currentUser.anon = accounts[idx].anon;
-      saveAccounts(accounts);
-      document.getElementById("current-user").textContent = currentUser.anon ? "Анонимно" : currentUser.phone;
-    }
-
-    function logout() {
-      localStorage.removeItem("currentUser");
-      location.reload();
-    }
-
-    function renderUsers() {
-      const search = document.getElementById("search").value.toLowerCase();
-      const container = document.getElementById("users");
-      const accounts = getAccounts();
-      container.innerHTML = "";
-      accounts.forEach(u => {
-        if (u.phone === currentUser.phone) return;
-        if (u.username.toLowerCase().includes(search)) {
-          const div = document.createElement("div");
-          div.className = "user";
-          div.textContent = `${u.username} (${u.anon ? "Анонимно" : u.phone})`;
-          container.appendChild(div);
-        }
-      });
-    }
-
-    function renderMessages() {
-      const container = document.getElementById("msg-container");
-      container.innerHTML = "";
-      const accounts = getAccounts();
-      accounts.forEach(u => {
-        u.messages.forEach(msg => {
-          const div = document.createElement("div");
-          div.className = "msg";
-          div.textContent = `${msg.from}: ${msg.text}`;
-          container.appendChild(div);
-        });
-      });
-    }
-
-    function sendMsg() {
-      const text = document.getElementById("msg-text").value.trim();
-      if (!text) return;
-      const accounts = getAccounts();
-      const idx = accounts.findIndex(u => u.phone === currentUser.phone);
-      accounts[idx].messages.push({
-        from: currentUser.anon ? "Аноним" : currentUser.username,
-        text
-      });
-      saveAccounts(accounts);
-      document.getElementById("msg-text").value = "";
-      renderMessages();
-    }
-
-    loadUser();
+    window.savePassport = function() {
+      savePassportData();
+    };
   </script>
+
+  <footer>
+    &copy; holyslygi 2025
+  </footer>
 </body>
-        </html>
+</html>
