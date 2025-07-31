@@ -1,134 +1,72 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html><html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Мемуслуги</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мемуслуги | holyslygi</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #fafafa, #f0f0f0);
       margin: 0;
       padding: 0;
+      color: #222;
     }
-
-    header {
-      background: #222;
-      color: #fff;
-      padding: 1rem;
+    header, footer {
+      background: #0040ff;
+      color: white;
+      padding: 10px 20px;
       text-align: center;
     }
-
-    nav button {
-      margin: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: #444;
-      color: white;
-      border: none;
-      cursor: pointer;
+    .container {
+      padding: 20px;
     }
-
-    nav button:hover {
-      background: #666;
+    .login, .content, .menu {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
-    #content {
-      padding: 2rem;
+    input, button {
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .hidden {
+      display: none;
+    }
+    .menu button {
+      width: auto;
+      margin: 5px;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Мемуслуги</h1>
-    <nav>
-      <button onclick="navigate('home')">Главная</button>
-      <button onclick="navigate('profile')">Профиль</button>
-      <button onclick="navigate('search')">Поиск</button>
-      <button onclick="navigate('balance')">Баланс</button>
-    </nav>
-  </header>
+    <h1>Мемуслуги - портал мемности</h1>
+  </header>  <div class="container">
+    <div class="login" id="login">
+      <h2>Вход</h2>
+      <input type="text" id="phone" placeholder="Введите номер телефона" />
+      <input type="text" id="username" placeholder="Введите имя пользователя" />
+      <button onclick="login()">Войти</button>
+    </div><div class="content hidden" id="main">
+  <h2 id="greeting"></h2>
+  <p>Ваш баланс: <span id="balance"></span> руб.</p>
+  <label><input type="checkbox" id="anonToggle" onchange="toggleAnon()" /> Анонимный режим</label>
+  <div class="menu">
+    <button onclick="openService('паспорт')">Мемпаспорт</button>
+    <button onclick="openService('деньги')">МемДеньги</button>
+    <button onclick="openService('сообщения')">МемСообщения</button>
+    <button onclick="openService('поиск')">Поиск пользователей</button>
+  </div>
+  <div id="service"></div>
+</div>
 
-  <main id="content"></main>
-
-  <script>
-    function getCookie(name) {
-      const matches = document.cookie.match(new RegExp(
-        "(?:^|; )" + name.replace(/([$?*|{}\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-      ));
-      return matches ? decodeURIComponent(matches[1]) : null;
-    }
-
-    function setCookie(name, value, days = 365) {
-      const date = new Date();
-      date.setDate(date.getDate() + days);
-      document.cookie = `${name}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
-    }
-
-    function getUserData() {
-      return {
-        username: getCookie('username') || 'Anon',
-        balance: parseFloat(getCookie('balance')) || 1.00,
-      };
-    }
-
-    function setUserData(data) {
-      setCookie('username', data.username);
-      setCookie('balance', data.balance);
-    }
-
-    function navigate(page) {
-      const content = document.getElementById('content');
-      const user = getUserData();
-
-      switch (page) {
-        case 'home':
-          content.innerHTML = `<h2>Добро пожаловать!</h2><p>Ты в мемном портале.</p>`;
-          break;
-
-        case 'profile':
-          content.innerHTML = `
-            <h2>Твой мемпаспорт</h2>
-            <p>Имя: ${user.username}</p>
-            <p>Баланс: ${user.balance.toFixed(2)} ₽</p>
-            <input id="newname" placeholder="Новое имя" />
-            <button onclick="updateName()">Сохранить</button>
-          `;
-          break;
-
-        case 'search':
-          content.innerHTML = `
-            <h2>Поиск пользователей</h2>
-            <input placeholder="Введите имя" />
-            <p>Фича в разработке.</p>
-          `;
-          break;
-
-        case 'balance':
-          content.innerHTML = `
-            <h2>Твой баланс</h2>
-            <p>${user.balance.toFixed(2)} ₽</p>
-            <button onclick="addBalance()">Пополнить</button>
-          `;
-          break;
-      }
-    }
-
-    function updateName() {
-      const input = document.getElementById('newname');
-      const user = getUserData();
-      user.username = input.value || user.username;
-      setUserData(user);
-      navigate('profile');
-    }
-
-    function addBalance() {
-      const user = getUserData();
-      user.balance += 5.00;
-      setUserData(user);
-      navigate('balance');
-    }
-
-    navigate('home');
-  </script>
-</body>
-  </html>
+  </div>  <footer>
+    &copy; 2025 holyn1k мемпортал
+  </footer>  <script src="script.js"></script></body>
+</html>
